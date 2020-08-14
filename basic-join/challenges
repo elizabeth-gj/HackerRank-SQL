@@ -1,0 +1,21 @@
+/*adding the counter column and joining both tables to have a clearer picture*/
+WITH data AS(
+    SELECT h.hacker_id as id, h.name as name, COUNT(c.challenge_id) as counter_challenges
+    FROM hackers as h
+    JOIN challenges as c
+    ON h.hacker_id = c.hacker_id
+    GROUP BY h.hacker_id, h.name
+)
+/*selecting the final columns I want to retrieve*/    
+SELECT id, name, counter_challenges
+FROM data
+WHERE 
+/*1st condition is to show the hacker if it's the max number of challenges created*/    
+counter_challenges = (SELECT MAX(counter_challenges) FROM data)
+OR 
+/*2nd condition is to exclude duplicates of all the other hackers*/    
+counter_challenges in (SELECT counter_challenges FROM data
+GROUP BY counter_challenges
+HAVING count(counter_challenges)=1)
+GROUP BY id, name, counter_challenges
+ORDER BY 3 DESC, 1;
