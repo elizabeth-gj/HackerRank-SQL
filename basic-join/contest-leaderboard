@@ -1,0 +1,18 @@
+/*adding a clause allowing to select only the max score for each challenge */
+WITH max_score AS(
+    SELECT MAX(score) as max_score, challenge_id, hacker_id
+    FROM submissions
+    GROUP BY challenge_id, hacker_id
+),
+/*adding a join in order to pair my new max_score table with the hackers table */
+data AS(
+SELECT h.hacker_id as id, h.name as name, m.max_score
+    FROM hackers h
+    JOIN max_score m
+    ON h.hacker_id = m.hacker_id
+)
+SELECT id, name, SUM(max_score)
+FROM data
+GROUP BY id, name
+HAVING SUM(max_score) > 0
+ORDER BY 3 DESC, 1 ASC;
