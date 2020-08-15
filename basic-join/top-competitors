@@ -1,0 +1,16 @@
+SELECT h.hacker_id, h.name
+/* playing with the joins to create a master table with all 4 data source tables*/
+FROM hackers h
+JOIN submissions s
+ON h.hacker_id = s.hacker_id
+JOIN challenges c
+ON s.challenge_id = c.challenge_id
+JOIN difficulty d
+ON c.difficulty_level = d.difficulty_level
+/* filtering out the submissions where the hackers didn't reach the full score*/
+WHERE s.score = d.score
+/* filtering out the hackers which only reached the top score once*/
+GROUP BY h.hacker_id, h.name
+HAVING COUNT(c.challenge_id)>1
+/* ordering my results*/
+ORDER BY (COUNT(c.challenge_id)) DESC, h.hacker_id ASC; 
