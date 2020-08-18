@@ -1,0 +1,8 @@
+WITH sub AS (
+   SELECT lat_n,
+    ROW_NUMBER() OVER (ORDER BY lat_n) AS rownum
+   FROM station)
+
+SELECT ROUND(LAT_N, 4)
+FROM sub
+WHERE rownum = (SELECT CEIL(COUNT(LAT_N) / 2) FROM station);
